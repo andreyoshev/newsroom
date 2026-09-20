@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Signup closed — {{ site_name }}{% endblock %}
+{% block content %}
+<div class="card auth-card">
+  <h1>Signup is closed</h1>
+  <p class="muted small">This {{ site_name }} is not accepting new accounts. Ask
+  whoever runs it for an invite.</p>
+  <a class="btn" href="/login">Sign in</a>
+</div>
+{% endblock %}

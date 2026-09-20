@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Feeds — {{ site_name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Feeds</h1>
+  <a class="btn primary" href="/feeds/new">New feed</a>
+</div>
+
+{% if feeds %}
+<section class="card">
+  <ul class="list">
+    {% for row in feeds %}
+    <li>
+      <a class="list-main" href="/feeds/{{ row.feed['id'] }}">
+        <span class="list-title">{{ row.feed["name"] }}</span>
+        <span class="meta">{{ row.source_count }} sources
+          {%- if row.feed["tg_chat_id"] %} · {{ row.feed["tg_chat_id"] }}{% endif %}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% else %}
+<section class="card">
+  <p class="muted small">No feeds yet. Create one: source groups in WhatsApp and a
+  Telegram chat to deliver to.</p>
+</section>
+{% endif %}
+{% endblock %}

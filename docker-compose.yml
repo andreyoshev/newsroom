@@ -1,0 +1,41 @@
+# Two services and one volume. There is nothing to configure here for a normal
+# deployment: the service configures itself through its own web UI on first
+# run, and stores that configuration in app.db on the volume below.
+#
+# The only knob is where the web service listens on the host. The default only
+# binds loopback, which is what you want behind Cloudflare Tunnel or a reverse
+# proxy on the same machine. To expose it directly instead:
+#   NEWSROOM_BIND=0.0.0.0:8080 docker compose up -d
+services:
+  # Multi-account WhatsApp sync: one `wacli sync --follow` per linked account,
+  # each aimed at its own store through HOME=/wacli-state/users/<id>.
+  wacli-supervisor:
+    build:
+      context: .
+      dockerfile: supervisor/Dockerfile
+    restart: unless-stopped
+    environment:
+      # Paths inside the image, not user configuration.
+      APP_DB: /wacli-state/app.db
+      WACLI_STATE_ROOT: /wacli-state
+    volumes:
+      - wacli-state:/wacli-state
+
+  # One web service: dashboard, OAuth authorization server, MCP on /mcp.
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_DB: /wacli-state/app.db
+      WACLI_STATE_ROOT: /wacli-state
+    volumes:
+      - wacli-state:/wacli-state
+    ports:
+      - "${NEWSROOM_BIND:-127.0.0.1:18080}:8000"
+    depends_on:
+      - wacli-supervisor
+
+volumes:
+  wacli-state:

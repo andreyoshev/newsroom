@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Authorize — {{ site_name }}{% endblock %}
+{% block content %}
+<div class="card auth-card">
+  <h1>Authorize access</h1>
+  <p class="small"><b>{{ client_name }}</b> is requesting access to one of your feeds
+  ({{ user["email"] }}).</p>
+
+  {% if feeds %}
+  <form method="post" action="/oauth/authorize">
+    <input type="hidden" name="client_id" value="{{ params.client_id }}">
+    <input type="hidden" name="redirect_uri" value="{{ params.redirect_uri }}">
+    <input type="hidden" name="code_challenge" value="{{ params.code_challenge }}">
+    <input type="hidden" name="state" value="{{ params.state }}">
+
+    <p class="muted small">Which feed?</p>
+    <div class="radio-list">
+      {% for f in feeds %}
+      <label class="radio-row">
+        <input type="radio" name="feed_id" value="{{ f['id'] }}" {{ 'checked' if loop.first }}>
+        <span>{{ f["name"] }}</span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" type="submit" name="decision" value="approve">Authorize</button>
+      <button class="btn" type="submit" name="decision" value="deny">Deny</button>
+    </div>
+  </form>
+  {% else %}
+  <div class="alert warn">You don't have any feeds yet. Create one first, then connect Claude.</div>
+  <a class="btn primary" href="/feeds/new">Create feed</a>
+  {% endif %}
+</div>
+{% endblock %}

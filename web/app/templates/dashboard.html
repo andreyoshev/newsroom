@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Overview — {{ site_name }}{% endblock %}
+{% block content %}
+<h1>Overview</h1>
+
+{% set status = conn["status"] if conn else "unlinked" %}
+<section class="card">
+  <div class="card-head">
+    <h2>WhatsApp</h2>
+    {% if status == "linked" %}<span class="pill ok">Connected</span>
+    {% elif status == "pairing" %}<span class="pill warn">Pairing</span>
+    {% else %}<span class="pill muted-pill">Not connected</span>{% endif %}
+  </div>
+  {% if conn and conn["display"] %}<p class="mono small muted">{{ conn["display"] }}</p>{% endif %}
+  <div class="actions">
+    {% if status == "linked" %}
+      <a class="btn" href="/connections">Manage</a>
+    {% else %}
+      <a class="btn primary" href="/connections/whatsapp/qr">Connect</a>
+    {% endif %}
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Feeds</h2>
+    <a class="btn primary small" href="/feeds/new">New feed</a>
+  </div>
+  {% if feeds %}
+    <ul class="list">
+      {% for row in feeds %}
+      <li>
+        <a class="list-main" href="/feeds/{{ row.feed['id'] }}">
+          <span class="list-title">{{ row.feed["name"] }}</span>
+          <span class="meta">{{ row.source_count }} sources</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted small">No feeds yet. Create one: pick source groups and a Telegram destination.</p>
+  {% endif %}
+</section>
+{% endblock %}

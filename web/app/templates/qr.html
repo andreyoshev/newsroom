@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Link WhatsApp — {{ site_name }}{% endblock %}
+{% block content %}
+<h1>Link WhatsApp</h1>
+<section class="card">
+  <p class="small">On your phone open WhatsApp → <i>Settings → Linked devices → Link a device</i>,
+  then point the camera at the QR below. The stream stays live while you scan;
+  once linked, this page returns to the overview.</p>
+  <div id="status" class="status">connecting to stream…</div>
+  <pre id="qr" class="qr">…</pre>
+  <p><a class="btn" href="/connections">Back</a></p>
+</section>
+<script>
+(function () {
+  const qr = document.getElementById('qr');
+  const status = document.getElementById('status');
+  const es = new EventSource('/connections/whatsapp/qr/stream');
+  let gotFrame = false;
+
+  es.addEventListener('frame', (e) => {
+    if (!gotFrame) { status.textContent = 'QR live — scan it'; gotFrame = true; }
+    qr.textContent = e.data;
+  });
+  es.addEventListener('done', (e) => {
+    if (e.data === 'ok') {
+      status.textContent = 'Connected — syncing your chats…';
+      status.className = 'status ok';
+      qr.textContent = '';
+      es.close();
+      setTimeout(() => { window.location.href = '/connections'; }, 1600);
+    } else {
+      status.textContent = 'Could not link — refresh to try again';
+      status.className = 'status err';
+      es.close();
+    }
+  });
+  es.addEventListener('error', () => {
+    if (es.readyState === EventSource.CLOSED) {
+      status.textContent = 'stream closed — refresh for a new QR';
+      status.className = 'status err';
+    }
+  });
+})();
+</script>
+{% endblock %}

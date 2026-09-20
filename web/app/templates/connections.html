@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Providers — {{ site_name }}{% endblock %}
+{% block content %}
+<h1>Providers</h1>
+
+{% set status = conn["status"] if conn else "unlinked" %}
+<section class="card">
+  <div class="card-head">
+    <h2>WhatsApp</h2>
+    {% if status == "linked" %}<span class="pill ok">Connected</span>
+    {% elif status == "pairing" %}<span class="pill warn">Pairing</span>
+    {% else %}<span class="pill muted-pill">Not connected</span>{% endif %}
+  </div>
+  {% if conn and conn["display"] %}<p class="mono small muted">{{ conn["display"] }}</p>{% endif %}
+  {% if conn %}<p class="mono small muted">Monitor ID: {{ conn["id"] }}</p>{% endif %}
+
+  <div class="actions">
+    <a class="btn primary" href="/connections/whatsapp/qr">{% if status == "linked" %}Reconnect{% else %}Connect{% endif %}</a>
+    {% if status == "linked" %}
+    <form method="post" action="/connections/whatsapp/unlink" class="inline">
+      <button class="btn danger" type="submit">Unlink</button>
+    </form>
+    {% endif %}
+  </div>
+  {% if status == "linked" %}
+  <p class="muted small">Chats sync in the background after linking — new groups may take a
+  minute to show up in a feed.</p>
+  {% else %}
+  <p class="muted small">Each account links its own WhatsApp. Data is isolated per user.</p>
+  {% endif %}
+</section>
+
+<p class="muted small">More source providers (Telegram, Viber) can be added here later.</p>
+{% endblock %}

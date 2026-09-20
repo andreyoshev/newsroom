@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ feed["name"] }} — {{ site_name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ feed["name"] }}</h1>
+  <form method="post" action="/feeds/{{ feed['id'] }}/delete" class="inline"
+        onsubmit="return confirm('Delete this feed?')">
+    <button class="btn danger small" type="submit">Delete</button>
+  </form>
+</div>
+
+{% if test_detail is defined %}
+<div class="alert {{ 'ok' if test_ok else 'error' }}">{{ test_detail }}</div>
+{% endif %}
+
+<form method="post" action="/feeds/{{ feed['id'] }}">
+  <section class="card">
+    <div class="card-head"><h2>Settings</h2></div>
+    <label>Name
+      <input type="text" name="name" value="{{ feed['name'] }}" required>
+    </label>
+    <label>Telegram bot token <span class="muted">(from <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a>)</span>
+      <input type="text" name="tg_bot_token" value="{{ feed['tg_bot_token'] }}" placeholder="123456:ABC-DEF…">
+    </label>
+    <label>Telegram chat id <span class="muted">(from <a href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a>)</span>
+      <input type="text" name="tg_chat_id" value="{{ feed['tg_chat_id'] }}" placeholder="123456789">
+    </label>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Sources</h2></div>
+    {% if chats_error %}
+      <div class="alert warn">{{ chats_error }}</div>
+    {% elif chats %}
+      {# Marker: the picker actually rendered. Without it feed_save leaves sources
+         untouched, so saving while wacli is unavailable can't wipe them. #}
+      <input type="hidden" name="sources_present" value="1">
+      <p class="muted small">Select source groups. Local name is how the feed refers
+      to a chat (optional).</p>
+      <div class="chat-list">
+        {% for c in chats %}
+        {% set checked = c.jid in selected %}
+        <div class="chat-row {{ 'on' if checked else '' }}">
+          <label class="chat-pick">
+            <input type="checkbox" name="source" value="{{ c.jid }}" {{ 'checked' if checked }}>
+            <span class="chat-name">{{ c.name }}</span>
+            {% if c.kind == 'group' %}<span class="tag">group</span>{% endif %}
+          </label>
+          <input type="text" name="name__{{ c.jid }}" class="local-name"
+                 value="{{ selected.get(c.jid, '') }}" placeholder="local name">
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted small">No chats found. Give WhatsApp a moment to sync, then refresh.</p>
+    {% endif %}
+  </section>
+
+  <div class="actions sticky-actions">
+    <button class="btn primary" type="submit">Save</button>
+    <a class="btn" href="/feeds">Back</a>
+  </div>
+</form>
+
+<section class="card">
+  <div class="card-head"><h2>Connect to Claude</h2></div>
+  <form method="post" action="/feeds/{{ feed['id'] }}/test" class="inline">
+    <button class="btn" type="submit">Send test</button>
+  </form>
+  <div class="connect-box">
+    <p class="muted small">Add this connector in Claude and pick this feed when authorizing:</p>
+    <code class="connector-url">{{ base_url }}/mcp</code>
+  </div>
+</section>
+{% endblock %}

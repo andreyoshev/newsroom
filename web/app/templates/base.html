@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/">{{ site_name }}</a>
+    {% if user is defined and user %}
+    <nav class="nav-links">
+      <a href="/">Overview</a>
+      <a href="/connections">Providers</a>
+      <a href="/feeds">Feeds</a>
+      {% if user["is_admin"] %}<a href="/settings">Settings</a>{% endif %}
+      <span class="nav-user muted">{{ user["email"] }}</span>
+      <form method="post" action="/logout" class="inline">
+        <button class="link" type="submit">Sign out</button>
+      </form>
+    </nav>
+    {% endif %}
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

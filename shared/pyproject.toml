@@ -1,0 +1,17 @@
+[project]
+name = "newsroom-shared"
+version = "0.1.0"
+description = "Shared core for newsroom: app DB, source providers, OAuth, wacli/telegram clients"
+requires-python = ">=3.12"
+dependencies = [
+    "aiosqlite>=0.20",
+    "argon2-cffi>=23.1",
+    "httpx>=0.27",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["newsroom_shared"]

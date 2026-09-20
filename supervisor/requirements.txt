@@ -1,0 +1,2 @@
+# The supervisor needs nothing beyond the shared package (newsroom-shared),
+# which brings aiosqlite for reading app.db. Installed via `pip install ./shared`.

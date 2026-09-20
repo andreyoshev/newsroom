@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Set up — {{ site_name }}{% endblock %}
+{% block content %}
+<div class="card setup-card">
+  <h1>Welcome — let's set this up</h1>
+  <p class="muted small">This runs once. Everything below can be changed later
+  under <b>Settings</b>; nothing here is stored in a config file.</p>
+
+  {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+
+  <form method="post" action="/setup">
+    <h2>Your account</h2>
+    <p class="muted small">The first account is the administrator.</p>
+    <label>Email
+      <input type="email" name="email" required autofocus autocomplete="username"
+             value="{{ values.get('email', '') }}">
+    </label>
+    <label>Password <span class="muted">(min 8 characters)</span>
+      <input type="password" name="password" required minlength="8" autocomplete="new-password">
+    </label>
+
+    <h2>This service</h2>
+    <label>Name
+      <input type="text" name="site_name" value="{{ values.get('site_name', 'newsroom') }}"
+             placeholder="newsroom">
+    </label>
+    <label>Public address
+      <input type="text" name="public_base_url"
+             value="{{ values.get('public_base_url') or suggested_base_url }}"
+             placeholder="https://news.example.com">
+    </label>
+    <p class="muted small">The https address people (and Claude) reach this at. It is
+    also the OAuth issuer, so it has to match what your tunnel or reverse proxy
+    serves. Prefilled from how you got here.</p>
+
+    <h2>Who can sign up</h2>
+    <div class="radio-list">
+      {% set mode = values.get('signup_mode', 'invite') %}
+      <label class="radio-row">
+        <input type="radio" name="signup_mode" value="invite" {{ 'checked' if mode == 'invite' }}>
+        <span>Invite code required <span class="muted">— hand the code to friends</span></span>
+      </label>
+      <label class="radio-row">
+        <input type="radio" name="signup_mode" value="closed" {{ 'checked' if mode == 'closed' }}>
+        <span>Closed <span class="muted">— nobody but you</span></span>
+      </label>
+      <label class="radio-row">
+        <input type="radio" name="signup_mode" value="open" {{ 'checked' if mode == 'open' }}>
+        <span>Open <span class="muted">— anyone who finds the URL</span></span>
+      </label>
+    </div>
+    <label>Invite code
+      <input type="text" name="invite_code" value="{{ suggested_invite }}" class="mono">
+    </label>
+
+    <button class="btn primary" type="submit">Finish setup</button>
+  </form>
+</div>
+{% endblock %}

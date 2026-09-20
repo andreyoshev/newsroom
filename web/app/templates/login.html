@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Sign in — {{ site_name }}{% endblock %}
+{% block content %}
+<div class="card auth-card">
+  <h1>Sign in</h1>
+  {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+  <form method="post" action="/login">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label>Email
+      <input type="email" name="email" required autofocus autocomplete="username">
+    </label>
+    <label>Password
+      <input type="password" name="password" required autocomplete="current-password">
+    </label>
+    <button class="btn primary" type="submit">Sign in</button>
+  </form>
+  <p class="muted small">No account? <a href="/signup">Create one</a></p>
+</div>
+{% endblock %}

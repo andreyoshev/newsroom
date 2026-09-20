@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}New feed — {{ site_name }}{% endblock %}
+{% block content %}
+<h1>New feed</h1>
+<section class="card">
+  {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+  <form method="post" action="/feeds">
+    <label>Name
+      <input type="text" name="name" required autofocus placeholder="Building chat">
+    </label>
+    <label>Telegram bot token <span class="muted">(from <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a>)</span>
+      <input type="text" name="tg_bot_token" placeholder="123456:ABC-DEF…">
+    </label>
+    <label>Telegram chat id <span class="muted">(from <a href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a>)</span>
+      <input type="text" name="tg_chat_id" placeholder="123456789">
+    </label>
+    <p class="muted small">You'll pick source groups in the next step.</p>
+    <button class="btn primary" type="submit">Create</button>
+  </form>
+</section>
+{% endblock %}
